@@ -8,7 +8,7 @@
 
 import UIKit
 import Firebase
-//import CoreGraphics
+import CoreGraphics
 
 class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate {
     //データベースへの参照
