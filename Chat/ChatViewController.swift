@@ -8,7 +8,7 @@
 
 import UIKit
 import Firebase
-import CoreGraphics
+//import CoreGraphics
 
 class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate {
     //データベースへの参照
@@ -71,10 +71,7 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
 //            }
 //        }
         
-        sendTextField.placeholder = "What is your current feelings"
-        //テーブルを反転
-//        self.table.transform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: 0)
-        self.view.backgroundColor = UIColor(red: 71/255, green: 234/255, blue: 126/255, alpha: 1)
+        sendTextField.placeholder = "What is your current feelings?"
         //nibオブジェクト
         let nib = UINib(nibName: "OriginalTableViewCell", bundle: nil)
         //nibファイルの登録，cellが呼ばれる前にcellに対してnibを登録する
@@ -82,10 +79,9 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
         self.table.register(nib, forCellReuseIdentifier: "OriginalCell")
         if id == ""{
             id = "匿名メンター"
-            IDLabel.text = "ID:匿名メンター"
-        }else{
-            IDLabel.text = "ID:\(id!)"
         }
+        IDLabel.text = "ID:\(id!)"
+        //delegate,datasourcceの設定
         table.delegate = self
         table.dataSource = self
         sendTextField.delegate = self
@@ -94,7 +90,7 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
 //    @IBAction func test(_ sender: Any) {
 //        //データの書き込み
 //        //childByAutoId()で何かしたのキーを新しく作成する
-//        //childByAutoId()sで新しいキーを作成，それに対して並列にchildを作成
+//        //childByAutoId()で新しいキーを作成，それに対して並列にchildを作成
 //        let newRef = rootRef.childByAutoId()
 //        let postRef = newRef.child("post")
 //        postRef.setValue("Snow")
@@ -112,37 +108,43 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
         let cell = tableView.dequeueReusableCell(withIdentifier: "OriginalCell") as? OriginalTableViewCell
         cell?.cellNameLabel.text = NameArray[indexPath.row]
         cell?.cellTextLabel.text = textArray[indexPath.row]
-        //cellを反転させる
-//        cell?.transform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: 0)
         return cell!
     }
-
+    //データの送信
     @IBAction func send(_ sender: Any) {
         senddata()
     }
+    //前の画面に戻る
     @IBAction func back(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
+    //returnでデータの送信
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         senddata()
         return true
     }
-    
+    //データを送る
     func senddata(){
+        //データが入力されていたら
         if  !("" == sendTextField.text){
             let value = sendTextField.text!
+            //配列に格納
             textArray.insert(value, at: 0)
             NameArray.insert(id, at: 0)
+            //データベースに値を入れる
             let newRef = rootRef.childByAutoId()
             let postRef = newRef.child("post")
             postRef.setValue(value)
             let nameRef = newRef.child("username")
             nameRef.setValue(id)
             sendTextField.text = ""
+            //tableviewの更新
             table.reloadData()
+            //更新したら一番上に行く
             let indexPath = IndexPath(row: 0, section: 0)
             self.table.scrollToRow(at: indexPath, at: .bottom, animated: true)
         }else{
+            //データが入力されていなかったらエラー
             let alert = UIAlertController(title: "Error", message: "送信する文章がありません", preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
             alert.addAction(ok)
